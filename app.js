@@ -21,10 +21,6 @@ app.use(express.static(`${__dirname}/public`));
 // this middlware applies to each and every single request and that's beacuse we didn't specify any route
 //
 // by sending the response we actually end the request response cycle
-app.use((req, res, next) => {
-  console.log('Hello from the middlware 👋🏼');
-  next();
-});
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();

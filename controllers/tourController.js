@@ -3,10 +3,22 @@ const Tour = require('./../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
   try {
-    //if we don't pass any arguments to this funcion it will return all the documents
-    //in that collection, and this is going to return a promise, and
-    //the information it's gonna be returned in an array
-    const tours = await Tour.find();
+
+    //we need a really new object not just the reference
+    //that's why we use destructuring
+    const queryObj = {...req.query};
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach(el => delete queryObj[el]);
+
+    const query = await Tour.find(queryObj);
+
+    // const tours = await Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    const tours = await query;
 
     res
     .status(200)

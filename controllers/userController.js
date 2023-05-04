@@ -1,39 +1,98 @@
-exports.getAllUsers = (req, res) => {
-  // 500 code means internal error(server error)
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined"
-  });
+const mongoose = require('mongoose');
+const users = require('../models/userModel');
+
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const user = await users.find(req.body);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user
+      }
+    });
+  } catch(err) {
+    // 500 code means internal error(server error)
+    res.status(404).json({
+      status: 'error',
+      message: err.message
+    });
+  }
 };
 
-exports.getUser = (req, res) => {
-  // 500 code means internal error(server error)
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined"
-  });
+exports.getUser = async (req, res) => {
+  try {
+    const user = await users.findById(req.params.id);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user
+      }
+    });
+  } catch(err) {
+    // 500 code means internal error(server error)
+    res.status(404).json({
+      status: 'error',
+      message: err.message
+    });
+  }
 };
 
-exports.createUser = (req, res) => {
-  // 500 code means internal error(server error)
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined"
-  });
+exports.createUser = async (req, res) => {
+  try {
+    const user = await users.create(req.body);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user
+      }
+    });
+  } catch(err) {
+    // 500 code means internal error(server error)
+    res.status(404).json({
+      status: 'error',
+      message: 'failed'
+    });
+  }
 };
 
-exports.updateUser = (req, res) => {
-  // 500 code means internal server error
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined"
-  });
+exports.updateUser = async (req, res) => {
+  try {
+    const user = await users.findByIdAndUpdate(req.params.id);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user
+      }
+    });
+  } catch(err) {
+    // 500 code means internal error(server error)
+    res.status(404).json({
+      status: 'error',
+      message: 'failed'
+    });
+  }
 }
 
-exports.deleteUser = (req, res) => {
-  // 500 code means internal error(server error)
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined"
-  });
+exports.deleteUser = async (req, res) => {
+  try {
+    await users.findOneAndDelete(req.params.id);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: null
+      }
+    });
+  } catch(err) {
+    // 500 code means internal error(server error)
+    res.status(404).json({
+      status: 'error',
+      message: 'failed'
+    });
+  }
 }

@@ -13,4 +13,8 @@ router
   .patch(controller.updateTour)
   .delete(controller.deleteTour);
 
+router
+  .route('/top-5-cheap')
+  .get(controller.aliasTopTours, controller.getAllTours);
+
 module.exports = router;

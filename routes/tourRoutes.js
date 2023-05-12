@@ -8,6 +8,10 @@ router
   .post(controller.createTour);
 
 router
+  .route('/tour-stats')
+  .get(controller.getTourStats);
+
+router
   .route('/top-5-cheap/')
   .get(controller.aliasTopTours, controller.getAllTours);
 

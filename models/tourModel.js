@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema({
   name: { 
@@ -10,6 +11,7 @@ const tourSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
+  slug: String,
   duration: {
     type: Number,
     required: [true, 'A tour must have a duration']
@@ -54,7 +56,48 @@ const tourSchema = new mongoose.Schema({
     default: Date.now(),
     select: false
   },
-  startDates: [Date]
+  startDates: [Date],
+  secretTour: {
+    type: Boolean,
+    default: false
+  }
+},
+{
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+tourSchema.virtual('durationWeeks').get(function() {
+  return this.duration / 7;
+});
+
+//DOCUMENT middleware runs before the .save() command and .create()
+//but not on insertMany <- this method will not trigger the save middleware
+// tourSchema.pre('save', function(next) {
+//   this.slug = slugify(this.name, { lower: true });
+//   next();
+// });
+
+// tourSchema.pre('save', function(next) {
+//   // console.log('Will save document!!');
+//   next();
+// });
+
+// tourSchema.post('save', function(doc, next) {
+//   console.log(doc);
+//   next();
+// });
+
+//QUERY middleware
+tourSchema.pre(/^find/, function(next) {
+  this.find({secretTour: { $ne: true }});
+  this.start = Date.now(); //current time in miliseconds
+  next();
+});
+
+tourSchema.post(/^find/, function(doc, next) {
+  console.log(`Query took ${Date.now() - this.start} miliseconds!`);
+  next();
 });
 
 // this is a convention: we always use uppercase on model names 

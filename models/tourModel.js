@@ -100,6 +100,15 @@ tourSchema.post(/^find/, function(doc, next) {
   next();
 });
 
+//AGGREGARION middleware
+//the this keyword will point to the aggregation object
+tourSchema.pre('aggregate', function(next) {
+  console.log(this.pipeline().unshift({  // -> unshift aggregates an element at the beginning of an array, shift aggregates the element at the end
+    $match: { secretTour: { $ne: true }}
+  })); 
+  next();
+})
+
 // this is a convention: we always use uppercase on model names 
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;

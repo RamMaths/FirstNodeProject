@@ -156,9 +156,6 @@ exports.getTourStats = async (req, res) => {
       {
         // 1 for ascending -1 for descending
         $sort: { avgPrice: 1 }
-      },
-      {
-        $match: { _id: { $ne: 'EASY' } }
       }
     ]);
 

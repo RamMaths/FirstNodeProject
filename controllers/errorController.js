@@ -8,10 +8,16 @@ const handleCastErrorDB = err => {
 
 const handleDuplicateFieldsDB = err => {
   const value = err.keyValue.name;
-  console.log(value);
   const message = `Duplicate filed value: ${value}. Please use another value`;
   return new AppError(message, 400);
 };
+
+const handleValidationErrorDB = err => {
+  const errors = Object.values(err.errors).map(element => element.message);
+  const message = `Invalid input data ${errors.join('. ')}`;
+  return new AppError(message, 400);
+};
+
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -51,16 +57,16 @@ module.exports = (err, req, res, next) => {
   //500 means error and a 400 means a fail
   err.status = err.status || 'error';
 
-
-  console.log(err);
-  
   if(process.env.NODE_ENV === 'development') {
+    console.log(err);
     sendErrorDev(err, res);
   } else if(process.env.NODE_ENV === 'production') {
     let error = {...err};
+
     
     if(error.kind === 'ObjectId') error = handleCastErrorDB(error);
     if(error.code === 11000) error = handleDuplicateFieldsDB(error);
+    if(error.name === 'ValidationError') error = handleValidationErrorDB(error);
 
     sendErrorProd(error, res);
   }

@@ -14,7 +14,7 @@ const handleDuplicateFieldsDB = err => {
 
 const handleValidationErrorDB = err => {
   const errors = Object.values(err.errors).map(element => element.message);
-  const message = `Invalid input data ${errors.join('. ')}`;
+  const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400);
 };
 
@@ -40,7 +40,8 @@ const sendErrorProd = (err, res) => {
   //Programming or other unknown error: don't leak details to the client
   } else {
     // 1) Log error
-    console.log('Error 💥', err);
+    console.log('Error 💥 ----------------------------')
+    console.log(err);
 
     // 2) Send a generic message
     res.status(500).json({
@@ -58,13 +59,11 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || 'error';
 
   if(process.env.NODE_ENV === 'development') {
-    console.log(err);
     sendErrorDev(err, res);
   } else if(process.env.NODE_ENV === 'production') {
     let error = {...err};
 
-    
-    if(error.kind === 'ObjectId') error = handleCastErrorDB(error);
+    if(error.name === 'CastError') error = handleCastErrorDB(error);
     if(error.code === 11000) error = handleDuplicateFieldsDB(error);
     if(error.name === 'ValidationError') error = handleValidationErrorDB(error);
 

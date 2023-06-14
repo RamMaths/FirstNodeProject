@@ -17,8 +17,22 @@ mongoose.connect(DB, {
 
 //START SERVER
 const port = process.env.PORT || 8000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
 
-//now we no longer run nodemon app.js but instead, we need to run server.js
+process.on('unhandledRejection', err => {
+  console.log(err.name, err.errmsg);
+  server.close(() => {
+    console.log('Unhandled Rejection 💥');
+    process.exit(1);
+  });
+});
+
+process.on('uncaughtException', err => {
+  console.log(err.name, err.errmsg);
+  server.close(() => {
+    console.log('Uncaught Exception 💥');
+    process.exit(1);
+  });
+});

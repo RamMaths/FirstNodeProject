@@ -4,6 +4,14 @@ const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
 const app = require('./app.js');
 
+process.on('uncaughtException', err => {
+  console.log(err.name, err.errmsg);
+  server.close(() => {
+    console.log('Uncaught Exception 💥');
+    process.exit(1);
+  });
+});
+
 // console.log(app.get('env'));
 // console.log(process.env);
 
@@ -25,14 +33,6 @@ process.on('unhandledRejection', err => {
   console.log(err.name, err.errmsg);
   server.close(() => {
     console.log('Unhandled Rejection 💥');
-    process.exit(1);
-  });
-});
-
-process.on('uncaughtException', err => {
-  console.log(err.name, err.errmsg);
-  server.close(() => {
-    console.log('Uncaught Exception 💥');
     process.exit(1);
   });
 });

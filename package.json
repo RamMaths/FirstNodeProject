@@ -11,6 +11,7 @@
   "author": "Ramses Mata",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "debug": "^4.3.4",
     "debugger": "^1.0.0",
     "dotenv": "~16.0.3",

@@ -1,32 +1,53 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
+const bcrypt = require('bcrypt');
 
+//name, email, photo, password passwordConfirm
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'A user must have a name'],
-    unique: true
+    required: [true, 'A User must contain a name'],
+    unique: true,
   },
   email: {
     type: String,
-    required: [true, 'A user must have an email'],
-    unique: true
-  },
-  role: {
-    type: String,
-    required: [true, 'A user must have a role']
-  },
-  active: {
-    type: Boolean,
-    default: false
+    required: [true, 'A user must contain an email'],
+    unique: true,
+    lowercase: true,
+    validate: [validator.isEmail, 'Please provide a valid email']
   },
   photo: {
     type: String,
+    required: false,
+    unique: false,
+    default: ''
   },
   password: {
     type: String,
-    required: [true, 'A user must have a password']
+    required: [true, 'Please provide a password'],
+    minlength: [8, 'Please provide a password with at least 8 characters']
+  },
+  passwordConfirm: {
+    type: String,
+    required: [true, 'A user must contain a password'],
+    minlength: [8, 'Please provide a password with at least 8 characters'],
+    //This only works on create and save
+    validate: {
+      validator: function(el) {
+        return el === this.password;
+      },
+      message: 'Passwords are not the same'
+    }
   }
 });
 
-const userModel = mongoose.model('User', userSchema);
-module.exports = userModel;
+userSchema.pre('save', async function(next) {
+  if(!this.isModified('password')) return next();
+
+  //hash the password with cost of 12
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+});
+
+const User = mongoose.model('User', userSchema);
+module.exports = User;

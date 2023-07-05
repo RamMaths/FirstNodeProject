@@ -1,29 +1,25 @@
 const mongoose = require('mongoose');
-const users = require('../models/userModel');
+const User = require('../models/userModel');
+const catchAsync = require('../utils/catchAsync');
 
+exports.getAllUsers = catchAsync(async (req, res) => {
+  const users = await User.find();
 
-exports.getAllUsers = async (req, res) => {
-  try {
-    const user = await users.find(req.body);
+  res
+  .status(200)
+  .json({
+    status: 'success',
+    results: users.length,
+    data: {
+      users
+    }
+  });
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user
-      }
-    });
-  } catch(err) {
-    // 500 code means internal error(server error)
-    res.status(404).json({
-      status: 'error',
-      message: err.message
-    });
-  }
-};
+});
 
 exports.getUser = async (req, res) => {
   try {
-    const user = await users.findById(req.params.id);
+    const user = await User.findById(req.params.id);
 
     res.status(200).json({
       status: 'success',
@@ -42,7 +38,7 @@ exports.getUser = async (req, res) => {
 
 exports.createUser = async (req, res) => {
   try {
-    const user = await users.create(req.body);
+    const user = await User.create(req.body);
 
     res.status(200).json({
       status: 'success',
@@ -61,7 +57,7 @@ exports.createUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const user = await users.findByIdAndUpdate(req.params.id);
+    const user = await User.findByIdAndUpdate(req.params.id);
 
     res.status(200).json({
       status: 'success',
@@ -80,7 +76,7 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
   try {
-    await users.findOneAndDelete(req.params.id);
+    await User.findOneAndDelete(req.params.id);
 
     res.status(200).json({
       status: 'success',
